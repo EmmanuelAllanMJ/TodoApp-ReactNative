@@ -1,16 +1,25 @@
 import { useState } from "react";
-import { StyleSheet, View, FlatList } from "react-native";
+import { StyleSheet, View, FlatList, Button, Image } from "react-native";
 import GoalInput from "./components/GoalInput";
 import GoalItem from "./components/GoalItem";
 
 export default function App() {
   const [courseGoals, setCourseGoals] = useState([]);
+  const [modalVisibility, setModalVisibility] = useState(false);
+
+  function startAddGoalHandler() {
+    setModalVisibility(true);
+  }
+  function endAddGoalHandler() {
+    setModalVisibility(false);
+  }
 
   function addGoalHandler(enteredGoalText) {
     setCourseGoals((currentCourseGoals) => [
       ...currentCourseGoals,
       { text: enteredGoalText, id: Math.random().toString() },
     ]);
+    endAddGoalHandler();
   }
   function deleteGoalHandler(id) {
     setCourseGoals((currentCourseGoals) => {
@@ -20,10 +29,19 @@ export default function App() {
 
   return (
     <View style={styles.appContainer}>
+      <Button
+        title="Add New Goal"
+        color="#5e0acc"
+        onPress={startAddGoalHandler}
+      />
       <View style={styles.goalsContainer}>
         {/* As scroll view depends on the parent container, we need to enclose it with View tag to restricts the available height */}
         {/* Only this view will be scrollable  */}
-        <GoalInput onAddGoal={addGoalHandler} />
+        <GoalInput
+          visible={modalVisibility}
+          onAddGoal={addGoalHandler}
+          onCancel={endAddGoalHandler}
+        />
         <FlatList
           data={courseGoals}
           renderItem={(itemData) => {
