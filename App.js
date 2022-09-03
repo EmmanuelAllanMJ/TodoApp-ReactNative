@@ -1,20 +1,48 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { useState } from "react";
+import { StyleSheet, View, FlatList } from "react-native";
+import GoalInput from "./components/GoalInput";
+import GoalItem from "./components/GoalItem";
 
 export default function App() {
+  const [courseGoals, setCourseGoals] = useState([]);
+
+  function addGoalHandler(enteredGoalText) {
+    setCourseGoals((currentCourseGoals) => [
+      ...currentCourseGoals,
+      { text: enteredGoalText, id: Math.random().toString() },
+    ]);
+  }
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
+    <View style={styles.appContainer}>
+      <View style={styles.goalsContainer}>
+        {/* As scroll view depends on the parent container, we need to enclose it with View tag to restricts the available height */}
+        {/* Only this view will be scrollable  */}
+        <GoalInput onAddGoal={addGoalHandler} />
+        <FlatList
+          data={courseGoals}
+          renderItem={(itemData) => {
+            return <GoalItem itemData={itemData} />;
+          }}
+          keyExtractor={(item, index) => {
+            return item.id;
+          }}
+          alwaysBounceVertical={false}
+        />
+      </View>
     </View>
   );
 }
 
+// Flex=1 in appContainer is used to specify our full screen is the area, as by default it takes as much space as it needs
 const styles = StyleSheet.create({
-  container: {
+  appContainer: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    padding: 50,
+    paddingHorizontal: 16,
+  },
+
+  goalsContainer: {
+    flex: 4,
   },
 });
